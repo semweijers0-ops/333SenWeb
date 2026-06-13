@@ -4,23 +4,32 @@ const path = require('path')
 const audioExts = new Set(['.mp3', '.wav', '.flac', '.aiff', '.aif', '.m4a', '.ogg', '.wma'])
 const ROOT = path.resolve(__dirname, '..')
 
+function byNumber(files) {
+  return files.sort((a, b) => {
+    const na = parseInt(a.file.match(/\d+/)?.[0] || '0', 10)
+    const nb = parseInt(b.file.match(/\d+/)?.[0] || '0', 10)
+    return na - nb
+  })
+}
+
 function scanDir(dir) {
   const p = path.join(ROOT, dir)
   if (!fs.existsSync(p)) return []
-  return fs.readdirSync(p)
-    .filter(f => audioExts.has(path.extname(f).toLowerCase()))
-    .map(f => {
-      const full = path.join(p, f)
-      const stat = fs.statSync(full)
-      return {
-        file: f,
-        name: path.parse(f).name,
-        ext:  path.extname(f).slice(1),
-        size: stat.size,
-        path: encodeURI(dir + '/' + f)
-      }
-    })
-    .sort((a, b) => b.size - a.size)
+  return byNumber(
+    fs.readdirSync(p)
+      .filter(f => audioExts.has(path.extname(f).toLowerCase()))
+      .map(f => {
+        const full = path.join(p, f)
+        const stat = fs.statSync(full)
+        return {
+          file: f,
+          name: path.parse(f).name,
+          ext:  path.extname(f).slice(1),
+          size: stat.size,
+          path: encodeURI(dir + '/' + f)
+        }
+      })
+  )
 }
 
 const tracks = scanDir('tracks')

@@ -9,82 +9,148 @@
   <link rel="preload" as="image" href="backround.jpg">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
+
+    :root {
+      --orange: #ff8c00;
+      --yellow: #ffea00;
+      --glow: rgba(255,140,0,0.15);
+      --card-bg: rgba(255,255,255,0.02);
+    }
+
+    html{scroll-behavior:smooth}
+
     body{
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,sans-serif;
       background:#000;color:#ccc;line-height:1.7;overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
     }
-    ::selection{background:rgba(255,255,255,0.12);color:#fff}
-    .bg{position:fixed;inset:0;z-index:-2;background:url('backround.jpg')center center/cover no-repeat fixed;filter:saturate(0.6)brightness(0.7);will-change:transform}
-    .bg-overlay{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at center,rgba(0,0,0,0.3)0%,rgba(0,0,0,0.8)100%)}
-    .scanlines{position:fixed;inset:0;pointer-events:none;z-index:9990;background:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(0,0,0,0.06)2px,rgba(0,0,0,0.06)4px)}
-    .noise{position:fixed;inset:0;pointer-events:none;z-index:9989;opacity:0.02;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");background-size:100px 100px;animation:noiseAnim .3s steps(2)infinite}
-    @keyframes noiseAnim{0%{transform:translate(0,0)}50%{transform:translate(-2px,1px)}}
-    .glitch-bar{position:fixed;left:0;width:100%;height:2px;background:rgba(255,255,255,0.03);pointer-events:none;z-index:9990;animation:glitchBar 3s infinite linear}
-    .glitch-bar:nth-child(2){height:1px;animation-delay:1.2s;animation-duration:4s}
-    .glitch-bar:nth-child(3){height:3px;animation-delay:2.4s;animation-duration:2.5s;background:rgba(255,255,255,0.015)}
-    @keyframes glitchBar{0%{top:-2px;opacity:0}50%{opacity:0.06}100%{top:100vh;opacity:0}}
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,0.8)0%,transparent 100%);pointer-events:none}
+
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:#0a0a0a}
+    ::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:#555}
+
+    ::selection{background:rgba(255,140,0,0.25);color:#fff}
+
+    .bg{position:fixed;inset:0;z-index:-2;background:url('backround.jpg')center center/cover no-repeat fixed;filter:saturate(0.5)brightness(0.5);will-change:transform;animation:bgPan 30s ease-in-out infinite alternate}
+    @keyframes bgPan{0%{transform:scale(1)}100%{transform:scale(1.08)}}
+
+    .bg-overlay{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at center,rgba(0,0,0,0.2)0%,rgba(0,0,0,0.85)100%)}
+
+    /* Grid overlay */
+    .grid-overlay{position:fixed;inset:0;pointer-events:none;z-index:9988;opacity:0.04;
+      background-image:
+        linear-gradient(rgba(255,140,0,0.3) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,140,0,0.3) 1px,transparent 1px);
+      background-size:60px 60px;
+      animation:gridMove 12s linear infinite;
+    }
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
+
+    .scanlines{position:fixed;inset:0;pointer-events:none;z-index:9990;background:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,rgba(0,0,0,0.08)2px,rgba(0,0,0,0.08)4px)}
+
+    .glitch-bar{position:fixed;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);pointer-events:none;z-index:9990;animation:glitchBar 4s infinite linear}
+    .glitch-bar:nth-child(4){height:1px;animation-delay:1.4s;animation-duration:5s;background:linear-gradient(90deg,transparent,var(--yellow),transparent)}
+    .glitch-bar:nth-child(5){height:3px;animation-delay:2.8s;animation-duration:3s;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)}
+    @keyframes glitchBar{0%{top:-3px;opacity:0}30%{opacity:0.08}70%{opacity:0.08}100%{top:100vh;opacity:0}}
+
+    /* Particles */
+    #particles{position:fixed;inset:0;pointer-events:none;z-index:9987}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 2rem;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,0.85)0%,transparent 100%);pointer-events:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
     nav *{pointer-events:auto}
-    nav .logo{font-size:.85rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#fff;text-decoration:none}
-    nav .logo .orange{color:#ff8c00}
-    nav .logo .yellow{color:#ffea00}
+    nav .logo{font-size:.85rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#fff;text-decoration:none;transition:opacity .3s}
+    nav .logo:hover{opacity:.8}
+    nav .logo .orange{color:var(--orange)}
+    nav .logo .yellow{color:var(--yellow)}
     nav .logo span{color:#666}
-    nav a{color:#888;text-decoration:none;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;transition:color .3s;margin-left:1.5rem}
+    nav a{color:#888;text-decoration:none;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;transition:color .3s;margin-left:1.5rem;position:relative}
+    nav a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--orange);transition:width .3s}
+    nav a:hover::after{width:100%}
     nav a:hover{color:#fff}
+
     .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
     .hero .pfp-row{display:flex;align-items:center;justify-content:center;gap:clamp(.75rem,3vw,2rem);margin-bottom:1.5rem}
     .hero .pfp-row .hero-wave{width:clamp(100px,14vw,180px);height:80px;opacity:.8}
     .hero .pfp-row .hero-wave canvas{display:block;width:100%;height:100%;border-radius:4px}
-    .hero .pfp{width:160px;height:160px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.08);flex-shrink:0;box-shadow:0 0 80px rgba(255,255,255,0.04);transition:transform .8s ease;will-change:transform}
-    .hero .pfp:hover{transform:scale(1.03)}
-    .hero h1{font-size:clamp(2.8rem,10vw,7rem);font-weight:900;letter-spacing:.12em;text-transform:uppercase;line-height:1;margin-bottom:.6rem}
+    .hero .pfp-wrap{position:relative;perspective:800px}
+    .hero .pfp{width:160px;height:160px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.1);flex-shrink:0;box-shadow:0 0 80px var(--glow),0 0 160px rgba(255,255,255,0.02);transition:transform .15s ease-out;will-change:transform;cursor:default;transform-style:preserve-3d}
+    .hero .pfp-glow{position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle at center,rgba(255,140,0,0.08),transparent 70%);pointer-events:none;animation:pulseGlow 3s ease-in-out infinite}
+    @keyframes pulseGlow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+    .hero h1{font-size:clamp(2.8rem,10vw,7rem);font-weight:900;letter-spacing:.12em;text-transform:uppercase;line-height:1;margin-bottom:.6rem;cursor:default}
     .hero .sensation{background:linear-gradient(180deg,#fff 30%,#999 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .underscore{background:linear-gradient(135deg,#ff8c00,#ffea00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block;vertical-align:baseline;line-height:1;font-size:0.85em}
-    .hero .divider{width:40px;height:1px;background:rgba(255,255,255,0.15);margin:1.2rem auto}
-    .hero .scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;color:#555;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase}
+    .underscore{background:linear-gradient(135deg,var(--orange),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block;vertical-align:baseline;line-height:1;font-size:0.85em}
+    .hero .divider{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);margin:1.2rem auto}
+    .hero .tagline{font-size:.85rem;letter-spacing:.4em;text-transform:uppercase;color:#666}
+    .hero .scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;color:#555;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;animation:fadeScroll 2s ease-in-out infinite}
+    @keyframes fadeScroll{0%,100%{opacity:.4}50%{opacity:.8}}
     .hero .scroll .mouse{width:16px;height:26px;border:1.5px solid #444;border-radius:10px;position:relative}
     .hero .scroll .mouse::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);width:2px;height:6px;background:#777;border-radius:2px;animation:scrollWheel 1.8s ease-in-out infinite}
     @keyframes scrollWheel{0%,100%{transform:translateX(-50%)translateY(0);opacity:1}50%{transform:translateX(-50%)translateY(8px);opacity:.2}}
+
+    /* Glitch text */
+    .glitch-hover{position:relative;display:inline-block;transition:filter .3s}
+    .glitch-hover:hover{animation:glitch 0.3s steps(2) 3}
+    @keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-2px,2px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,-2px)}80%{transform:translate(1px,2px)}100%{transform:translate(0)}}
+    .glitch-hover::before,.glitch-hover::after{content:attr(data-text);position:absolute;inset:0;opacity:0;pointer-events:none}
+    .glitch-hover:hover::before{opacity:0.06;color:var(--orange);animation:glitchBefore 0.3s steps(2) 3;clip-path:inset(20% 0 40% 0)}
+    .glitch-hover:hover::after{opacity:0.06;color:var(--yellow);animation:glitchAfter 0.3s steps(2) 3;clip-path:inset(60% 0 10% 0)}
+    @keyframes glitchBefore{0%{transform:translate(0)}20%{transform:translate(-3px,0)}40%{transform:translate(3px,0)}60%{transform:translate(-1px,0)}80%{transform:translate(2px,0)}100%{transform:translate(0)}}
+    @keyframes glitchAfter{0%{transform:translate(0)}20%{transform:translate(2px,0)}40%{transform:translate(-2px,0)}60%{transform:translate(3px,0)}80%{transform:translate(-3px,0)}100%{transform:translate(0)}}
+
     .section-wrap{padding:6rem 1.5rem;max-width:1120px;margin:0 auto;position:relative}
     .section-wrap::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.5);border-radius:16px}
     .section-wrap>*{position:relative;z-index:1}
+
+    /* Section divider */
+    .section-divider{height:1px;max-width:1120px;margin:-2rem auto 0;background:linear-gradient(90deg,transparent,rgba(255,140,0,0.15),transparent);position:relative;z-index:1}
+
     .section-label{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:#555;margin-bottom:.5rem}
     .section-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin-bottom:3rem;position:relative;display:inline-block}
-    .section-title::after{content:'';position:absolute;bottom:-10px;left:0;width:60px;height:2px;background:#fff;animation:titleLine 3s ease-in-out infinite}
+    .section-title::after{content:'';position:absolute;bottom:-10px;left:0;width:60px;height:2px;background:linear-gradient(90deg,var(--orange),var(--yellow));animation:titleLine 3s ease-in-out infinite;border-radius:2px}
     @keyframes titleLine{0%,100%{width:60px;opacity:.6}50%{width:100px;opacity:1}}
+
+    /* Scroll reveal */
+    .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-delay-1{transition-delay:0.1s}
+    .reveal-delay-2{transition-delay:0.2s}
+    .reveal-delay-3{transition-delay:0.3s}
+    .reveal-delay-4{transition-delay:0.4s}
+
     .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
     .about-grid p{font-size:.95rem;color:#aaa;line-height:1.9}
     .about-grid p strong{color:#fff;font-weight:600}
     .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-    .about-stats .stat{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:1.5rem;text-align:center;transition:border-color .3s}
-    .about-stats .stat:hover{border-color:rgba(255,255,255,0.15)}
+    .about-stats .stat{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:1.5rem;text-align:center;transition:border-color .3s,transform .3s,box-shadow .3s}
+    .about-stats .stat:hover{border-color:rgba(255,140,0,0.2);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.3)}
     .about-stats .stat .num{font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:.02em}
     .about-stats .stat .label{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:#666;margin-top:.3rem}
-    .soundcloud-embed{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:.75rem;margin-top:1.5rem}
+    .soundcloud-embed{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:.75rem;margin-top:1.5rem;transition:border-color .3s}
+    .soundcloud-embed:hover{border-color:rgba(255,140,0,0.15)}
 
-    /* ── Player ── */
     .player-section{min-height:400px}
     .player-tabs{display:flex;gap:1rem;margin-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:.75rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
-    .player-tab{background:none;border:none;color:#666;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:.4rem 0;transition:color .3s;font-family:inherit;white-space:nowrap;flex-shrink:0}
+    .player-tab{background:none;border:none;color:#666;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:.4rem 0;transition:color .3s;font-family:inherit;white-space:nowrap;flex-shrink:0;position:relative}
     .player-tab:hover{color:#aaa}
-    .player-tab.active{color:#fff;border-bottom:2px solid #fff;margin-bottom:-1px}
+    .player-tab.active{color:#fff}
+    .player-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--orange),var(--yellow));border-radius:2px}
+
     .tracklist{display:flex;flex-direction:column;gap:2px}
-    .track-row{display:flex;align-items:center;gap:.75rem;padding:.7rem .75rem;border-radius:6px;cursor:pointer;transition:background .2s;background:rgba(255,255,255,0.01);min-height:48px}
-    .track-row:hover{background:rgba(255,255,255,0.05)}
-    .track-row.playing{background:rgba(255,255,255,0.07)}
+    .track-row{display:flex;align-items:center;gap:.75rem;padding:.7rem .75rem;border-radius:6px;cursor:pointer;transition:background .2s,transform .2s;background:rgba(255,255,255,0.01);min-height:48px}
+    .track-row:hover{background:rgba(255,255,255,0.05);transform:translateX(3px)}
+    .track-row.playing{background:rgba(255,140,0,0.06);border-left:2px solid var(--orange);padding-left:calc(.75rem - 2px)}
     .track-row .play-btn{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.03);color:#ccc;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;font-family:inherit}
     .track-row:hover .play-btn{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.08)}
-    .track-row.playing .play-btn{background:#fff;color:#000;border-color:#fff}
+    .track-row.playing .play-btn{background:var(--orange);color:#000;border-color:var(--orange)}
     .track-row .info{flex:1;min-width:0}
     .track-row .info .name{font-size:.88rem;font-weight:500;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .track-row .info .meta{font-size:.68rem;color:#666;margin-top:1px}
+    .track-row .info .meta{font-size:.68rem;color:#555;margin-top:1px}
     .track-row .dur{font-size:.72rem;color:#555;flex-shrink:0;font-variant-numeric:tabular-nums}
     .empty-state{text-align:center;padding:3rem 1rem;color:#555;font-size:.85rem;letter-spacing:.05em}
     .empty-state .big{font-size:2.5rem;margin-bottom:.5rem;opacity:.15}
 
-    /* ── Now Playing with waveform ── */
-    .now-playing{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:none;flex-direction:column;gap:.6rem}
+    .now-playing{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:none;flex-direction:column;gap:.6rem;border-color:rgba(255,140,0,0.1)}
     .now-playing.visible{display:flex}
     .np-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
     .np-info{flex:1;min-width:0}
@@ -95,36 +161,52 @@
     .np-ctrl:hover{background:rgba(255,255,255,0.1)}
     .np-time{font-size:.68rem;color:#666;font-variant-numeric:tabular-nums;white-space:nowrap}
 
-    /* Waveform */
     .waveform-wrap{position:relative;width:100%;height:110px;cursor:pointer;border-radius:6px;overflow:hidden;background:rgba(255,255,255,0.015)}
     .waveform-wrap canvas{display:block;width:100%;height:100%}
     .waveform-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#444;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;pointer-events:none}
 
     .releases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-top:1.5rem}
-    .release-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .3s}
-    .release-card:hover{transform:translateY(-6px)scale(1.005);border-color:rgba(255,255,255,0.2)}
+    .release-card{background:var(--card-bg);border:1px solid rgba(255,255,255,0.05);border-radius:12px;overflow:hidden;transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s;transform-style:preserve-3d;perspective:800px}
+    .release-card:hover{transform:translateY(-8px)scale(1.005);border-color:rgba(255,140,0,0.2);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+    .release-card .art-wrap{overflow:hidden;position:relative}
+    .release-card .art-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,0.6) 100%);pointer-events:none}
     .release-card .art{width:100%;height:240px;object-fit:cover;display:block;transition:transform .6s ease;will-change:transform}
-    .release-card:hover .art{transform:scale(1.03)}
+    .release-card:hover .art{transform:scale(1.06)}
     .release-card .body{padding:1.25rem 1.5rem 1.5rem}
     .release-card .body .cat{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#555}
     .release-card .body h3{font-size:1.1rem;font-weight:700;letter-spacing:.04em;color:#fff;margin:.3rem 0 .2rem}
     .release-card .body p{font-size:.82rem;color:#888}
-    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-    .gallery-grid img{width:100%;height:200px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.04);transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .3s;will-change:transform}
-    .gallery-grid img:hover{transform:scale(1.03);border-color:rgba(255,255,255,0.2)}
-    .gallery-grid img:first-child{grid-column:span 2;grid-row:span 2;height:auto}
+
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+    .gallery-grid .gal-item{overflow:hidden;border-radius:8px;border:1px solid rgba(255,255,255,0.04);cursor:pointer;position:relative;transition:border-color .3s,transform .3s}
+    .gallery-grid .gal-item:hover{border-color:rgba(255,140,0,0.2);transform:scale(1.02);z-index:2}
+    .gallery-grid .gal-item::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;pointer-events:none}
+    .gallery-grid .gal-item:hover::after{background:rgba(0,0,0,0.1)}
+    .gallery-grid .gal-item img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .5s ease;will-change:transform}
+    .gallery-grid .gal-item:hover img{transform:scale(1.08)}
+    .gallery-grid .gal-item:first-child{grid-column:span 2;grid-row:span 2}
+    .gallery-grid .gal-item:first-child img{height:auto}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;cursor:zoom-out;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .lightbox.open{opacity:1;pointer-events:all}
+    .lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;transform:scale(0.9);transition:transform .4s cubic-bezier(.16,1,.3,1)}
+    .lightbox.open img{transform:scale(1)}
+    .lightbox .lb-close{position:absolute;top:1.5rem;right:2rem;color:#fff;font-size:1.5rem;cursor:pointer;background:none;border:none;font-family:inherit;opacity:.6;transition:opacity .3s;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+    .lightbox .lb-close:hover{opacity:1}
+
     .link-grid{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center}
     .link-grid a{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2rem;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#ccc;text-decoration:none;font-size:.85rem;letter-spacing:.04em;transition:all .3s ease;background:rgba(255,255,255,0.03);position:relative;overflow:hidden}
-    .link-grid a::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.06)50%,transparent 100%);transform:translateX(-100%);transition:transform .5s ease}
+    .link-grid a::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,140,0,0.08)50%,transparent 100%);transform:translateX(-100%);transition:transform .5s ease}
     .link-grid a:hover::before{transform:translateX(100%)}
-    .link-grid a:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.3);color:#fff}
+    .link-grid a:hover{background:rgba(255,140,0,0.06);border-color:rgba(255,140,0,0.3);color:#fff;box-shadow:0 0 30px rgba(255,140,0,0.05)}
+
     footer{text-align:center;padding:4rem 1.5rem 3rem;color:#444;font-size:.75rem;letter-spacing:.08em;position:relative}
     footer .top{display:inline-block;margin-top:1.5rem;color:#555;text-decoration:none;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;border:1px solid rgba(255,255,255,0.06);padding:.5rem 1.2rem;border-radius:6px;transition:all .3s}
-    footer .top:hover{border-color:rgba(255,255,255,0.2);color:#fff}
+    footer .top:hover{border-color:rgba(255,140,0,0.2);color:var(--orange)}
 
-    /* ── Mobile ── */
     @media(max-width:768px){
-      nav{padding:.8rem 1rem}
+      nav{padding:.8rem 1rem;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
       nav .logo{font-size:.75rem}
       nav a{font-size:.62rem;margin-left:.6rem;letter-spacing:.08em}
       .hero .pfp{width:120px;height:120px}
@@ -134,9 +216,10 @@
       .about-grid{grid-template-columns:1fr;gap:1.5rem}
       .about-stats{grid-template-columns:1fr 1fr;gap:.8rem}
       .about-stats .stat{padding:1rem}
-      .gallery-grid{grid-template-columns:1fr 1fr;gap:.6rem}
-      .gallery-grid img:first-child{grid-column:auto;grid-row:auto;height:180px}
-      .gallery-grid img{height:140px}
+      .gallery-grid{grid-template-columns:1fr 1fr;gap:.5rem}
+      .gallery-grid .gal-item:first-child{grid-column:auto;grid-row:auto}
+      .gallery-grid .gal-item:first-child img{height:160px}
+      .gallery-grid .gal-item img{height:120px}
       .releases-grid{grid-template-columns:1fr}
       .now-playing{padding:.8rem 1rem}
       .np-header{flex-wrap:wrap}
@@ -147,6 +230,8 @@
       .player-tabs{gap:.6rem}
       .player-tab{font-size:.7rem;letter-spacing:.1em}
       .soundcloud-embed iframe{height:200px}
+      .grid-overlay{background-size:40px 40px}
+      .release-card .art{height:180px}
     }
     @media(max-width:480px){
       nav a{font-size:.55rem;margin-left:.4rem;letter-spacing:.05em}
@@ -159,9 +244,9 @@
       .about-stats{grid-template-columns:1fr 1fr;gap:.5rem}
       .about-stats .stat{padding:.75rem}
       .about-stats .stat .num{font-size:1.2rem}
-      .gallery-grid{grid-template-columns:1fr;gap:.5rem}
-      .gallery-grid img{height:180px}
-      .gallery-grid img:first-child{height:220px}
+      .gallery-grid{grid-template-columns:1fr;gap:.4rem}
+      .gallery-grid .gal-item img{height:180px}
+      .gallery-grid .gal-item:first-child img{height:220px}
       .track-row .info .name{font-size:.8rem}
       .track-row .dur{font-size:.65rem}
       .waveform-wrap{height:50px}
@@ -169,20 +254,22 @@
       .np-name{font-size:.8rem}
       .link-grid a{width:100%;justify-content:center}
       .soundcloud-embed iframe{height:160px}
+      .release-card .art{height:150px}
     }
   </style>
 </head>
 <body>
   <div class="bg"></div>
   <div class="bg-overlay"></div>
+  <div class="grid-overlay"></div>
   <div class="scanlines"></div>
-  <div class="noise"></div>
+  <canvas id="particles"></canvas>
   <div class="glitch-bar"></div>
   <div class="glitch-bar"></div>
   <div class="glitch-bar"></div>
 
   <nav>
-    <a href="#" class="logo"><span style="color:#ff8c00">3</span><span style="color:#ffa300">3</span><span style="color:#ffc800">3</span>SENSATION<span class="underscore">_</span></a>
+    <a href="#" class="logo"><span style="color:var(--orange)">3</span><span style="color:#ffa300">3</span><span style="color:#ffc800">3</span>SENSATION<span class="underscore">_</span></a>
     <div>
       <a href="#about">About</a>
       <a href="#music">Music</a>
@@ -192,13 +279,16 @@
     </div>
   </nav>
 
-  <header class="hero">
+  <header class="hero" id="top">
     <div class="pfp-row">
       <div class="hero-wave"><canvas id="heroWaveL" height="120"></canvas></div>
-      <img src="pfp33.jpg" alt="333 SENSATION" class="pfp" fetchpriority="high">
+      <div class="pfp-wrap">
+        <img src="pfp33.jpg" alt="333 SENSATION" class="pfp" id="pfp" fetchpriority="high" draggable="false">
+        <div class="pfp-glow"></div>
+      </div>
       <div class="hero-wave"><canvas id="heroWaveR" height="120"></canvas></div>
     </div>
-    <h1><span style="color:#ff8c00">3</span><span style="color:#ffa300">3</span><span style="color:#ffc800">3</span> <span class="sensation">SENSATION</span><span class="underscore">_</span></h1>
+    <h1 class="glitch-hover" data-text="333 SENSATION_"><span style="color:var(--orange)">3</span><span style="color:#ffa300">3</span><span style="color:#ffc800">3</span> <span class="sensation">SENSATION</span><span class="underscore">_</span></h1>
     <div class="divider"></div>
     <p class="tagline">Industrial Techno Producer</p>
     <div class="scroll">
@@ -207,15 +297,17 @@
     </div>
   </header>
 
+  <div class="section-divider"></div>
+
   <div class="section-wrap" id="about">
-    <p class="section-label">Bio</p>
-    <h2 class="section-title">About</h2>
+    <p class="section-label reveal">Bio</p>
+    <h2 class="section-title reveal reveal-delay-1">About</h2>
     <div class="about-grid">
-      <div>
+      <div class="reveal reveal-delay-2">
         <p><strong>333 SENSATION</strong> is a Dutch industrial techno project driven by raw, low-BPM soundscapes. Inspired by the grit of underground circuits — pounding kicks, corroded textures, and walls of distorted noise.</p>
         <p style="margin-top:1rem">Besides producing, I work as a visual artist (<strong>media &amp; design</strong>), where sound and image converge in a dark, industrial aesthetic.</p>
       </div>
-      <div class="about-stats">
+      <div class="about-stats reveal reveal-delay-3">
         <div class="stat"><div class="num" id="trackCount">0</div><div class="label">Tracks</div></div>
         <div class="stat"><div class="num" id="setCount">0</div><div class="label">Live Sets</div></div>
         <div class="stat"><div class="num">∞</div><div class="label">Hz</div></div>
@@ -224,9 +316,11 @@
     </div>
   </div>
 
+  <div class="section-divider"></div>
+
   <div class="section-wrap player-section" id="music">
-    <p class="section-label">Listen</p>
-    <h2 class="section-title">Music</h2>
+    <p class="section-label reveal">Listen</p>
+    <h2 class="section-title reveal reveal-delay-1">Music</h2>
 
     <div class="now-playing" id="nowPlaying">
       <div class="np-header">
@@ -245,40 +339,46 @@
       </div>
     </div>
 
-    <div class="player-tabs">
+    <div class="player-tabs reveal reveal-delay-1">
       <button class="player-tab active" data-tab="tracks">Tracks</button>
       <button class="player-tab" data-tab="sets">Live Sets</button>
     </div>
 
-    <div id="tracklistContainer">
+    <div id="tracklistContainer" class="reveal reveal-delay-2">
       <div class="empty-state">
         <div class="big">▹</div>
         <p>Drop audio files into the <strong>tracks/</strong> folder — they appear here instantly</p>
       </div>
     </div>
 
-    <div class="soundcloud-embed">
+    <div class="soundcloud-embed reveal reveal-delay-3">
       <iframe width="100%" height="350" scrolling="no" frameborder="no" allow="autoplay"
-        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/333sensation&color=%23ffffff&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false&visual=true"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/333sensation&color=%23ff8c00&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false&visual=true"
         loading="lazy" title="333 SENSATION on SoundCloud">
       </iframe>
     </div>
   </div>
 
+  <div class="section-divider"></div>
+
   <div class="section-wrap" id="releases">
-    <p class="section-label">Discography</p>
-    <h2 class="section-title">Releases</h2>
+    <p class="section-label reveal">Discography</p>
+    <h2 class="section-title reveal reveal-delay-1">Releases</h2>
     <div class="releases-grid">
-      <div class="release-card">
-        <img class="art" src="Hydraulic%20Rupture/BANNER2.jpg" alt="Hydraulic Rupture" loading="lazy" width="600" height="240">
+      <div class="release-card reveal reveal-delay-2">
+        <div class="art-wrap">
+          <img class="art" src="Hydraulic%20Rupture/BANNER2.jpg" alt="Hydraulic Rupture" loading="lazy" width="600" height="240">
+        </div>
         <div class="body">
           <div class="cat">333SR001</div>
           <h3>HYDRAULIC RUPTURE</h3>
           <p>Industrial techno — out now</p>
         </div>
       </div>
-      <div class="release-card">
-        <img class="art" src="mammoth/mamoothbanner.jpg" alt="Mammoth" loading="lazy" width="600" height="240">
+      <div class="release-card reveal reveal-delay-3">
+        <div class="art-wrap">
+          <img class="art" src="mammoth/mamoothbanner.jpg" alt="Mammoth" loading="lazy" width="600" height="240">
+        </div>
         <div class="body">
           <div class="cat">333SR002</div>
           <h3>MAMMOTH</h3>
@@ -288,31 +388,41 @@
     </div>
   </div>
 
+  <div class="section-divider"></div>
+
   <div class="section-wrap" id="gallery">
-    <p class="section-label">Visuals</p>
-    <h2 class="section-title">Gallery</h2>
-    <div class="gallery-grid">
-      <img src="Hydraulic%20Rupture/COBER3.jpg" alt="Hydraulic Rupture art" loading="lazy" width="600" height="400">
-      <img src="Hydraulic%20Rupture/BANNER2.jpg" alt="Hydraulic Rupture banner" loading="lazy" width="300" height="200">
-      <img src="mammoth/mamooth.jpg" alt="Mammoth art" loading="lazy" width="300" height="200">
-      <img src="mammoth/mamoothbanner.jpg" alt="Mammoth banner" loading="lazy" width="300" height="200">
-      <img src="BANNER22.jpg" alt="333 SENSATION" loading="lazy" width="300" height="200">
-      <img src="pfp33.jpg" alt="333 SENSATION profile" loading="lazy" width="300" height="200">
+    <p class="section-label reveal">Visuals</p>
+    <h2 class="section-title reveal reveal-delay-1">Gallery</h2>
+    <div class="gallery-grid reveal reveal-delay-2" id="galleryGrid">
+      <div class="gal-item"><img src="Hydraulic%20Rupture/COBER3.jpg" alt="Hydraulic Rupture art" loading="lazy" width="600" height="400"></div>
+      <div class="gal-item"><img src="Hydraulic%20Rupture/BANNER2.jpg" alt="Hydraulic Rupture banner" loading="lazy" width="300" height="200"></div>
+      <div class="gal-item"><img src="mammoth/mamooth.jpg" alt="Mammoth art" loading="lazy" width="300" height="200"></div>
+      <div class="gal-item"><img src="mammoth/mamoothbanner.jpg" alt="Mammoth banner" loading="lazy" width="300" height="200"></div>
+      <div class="gal-item"><img src="BANNER22.jpg" alt="333 SENSATION" loading="lazy" width="300" height="200"></div>
+      <div class="gal-item"><img src="pfp33.jpg" alt="333 SENSATION profile" loading="lazy" width="300" height="200"></div>
     </div>
   </div>
 
+  <div class="section-divider"></div>
+
   <div class="section-wrap" id="connect">
-    <p class="section-label">Network</p>
-    <h2 class="section-title">Connect</h2>
-    <div class="link-grid">
+    <p class="section-label reveal">Network</p>
+    <h2 class="section-title reveal reveal-delay-1">Connect</h2>
+    <div class="link-grid reveal reveal-delay-2">
       <a href="https://soundcloud.com/333sensation" target="_blank">SoundCloud</a>
     </div>
   </div>
 
   <footer>
     <p>333 SENSATION — Industrial Techno</p>
-    <a href="#" class="top">Back to top</a>
+    <a href="#top" class="top">Back to top</a>
   </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose">✕</button>
+    <img id="lbImg" src="" alt="">
+  </div>
 
   <script src="data.js"></script>
   <script>
@@ -390,16 +500,13 @@
       const barW = Math.max(2, (w / bars) - 2)
       const gap = 2
 
-      // use live freq data if available, else ambient
       let data = hwFreq
       if (analyser && !audio.paused) {
         analyser.getByteFrequencyData(hwFreq)
-        // boost peaks aggressively
         for (let i = 0; i < hwFreq.length; i++) {
           hwFreq[i] = Math.min(255, hwFreq[i] * 1.6)
         }
       } else {
-        // aggressive techno idle animation
         hwPhase += 0.06
         for (let i = 0; i < hwFreq.length; i++) {
           hwFreq[i] = Math.max(0, Math.min(255,
@@ -418,7 +525,6 @@
         const x = i * (barW + gap)
         const y = h - barH
         const t = i / bars
-        // orange → yellow gradient
         const r = 255
         const g = Math.round(140 + t * 115)
         const b = 0
@@ -427,7 +533,6 @@
         ctx.shadowBlur = 8
         ctx.globalAlpha = 1
         ctx.fillRect(mirror ? w - x - barW : x, y, barW, barH)
-        // bright peak glow
         if (val > 180) {
           ctx.shadowBlur = 16
           ctx.globalAlpha = 0.5
@@ -445,7 +550,6 @@
       const dpr = window.devicePixelRatio || 1
       const mid = wfH / 2
 
-      // — Static waveform (faint track overview) —
       if (waveData) {
         wfCtx.fillStyle = 'rgba(255,234,0,0.06)'
         const bw = Math.max(1, Math.round(wfW / waveData.length))
@@ -456,7 +560,6 @@
         }
       }
 
-      // — Playhead line —
       if (audio.duration && waveLoaded) {
         const px = (audio.currentTime / audio.duration) * wfW
         wfCtx.strokeStyle = 'rgba(255,255,255,0.15)'
@@ -467,7 +570,6 @@
         wfCtx.stroke()
       }
 
-      // — Live frequency spectrum (overlay) —
       if (analyser && !audio.paused) {
         analyser.getByteFrequencyData(freqData)
         const bars = freqData.length
@@ -498,7 +600,6 @@
 
     function animateSpectrum() {
       drawWaveform()
-      // capture freq data once for both hero waves so they mirror perfectly
       if (analyser && !audio.paused) analyser.getByteFrequencyData(hwFreq)
       drawHeroWave(hwLCtx, false)
       drawHeroWave(hwRCtx, true)
@@ -693,6 +794,114 @@
       })
     }
 
+    /* ── Scroll Reveal ── */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible')
+          revealObserver.unobserve(e.target)
+        }
+      })
+    }, { threshold: 0.12 })
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el))
+
+    /* ── 3D PFP Tilt ── */
+    const pfp = document.getElementById('pfp')
+    const pfpWrap = pfp.parentElement
+    pfpWrap.addEventListener('mousemove', (e) => {
+      const rect = pfpWrap.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      const y = (e.clientY - rect.top) / rect.height
+      const tiltX = (y - 0.5) * -20
+      const tiltY = (x - 0.5) * 20
+      pfp.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.04,1.04,1.04)`
+    })
+    pfpWrap.addEventListener('mouseleave', () => {
+      pfp.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)'
+    })
+
+    /* ── Gallery Lightbox ── */
+    const lightbox = document.getElementById('lightbox')
+    const lbImg = document.getElementById('lbImg')
+    const lbClose = document.getElementById('lbClose')
+
+    document.querySelectorAll('.gal-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const img = item.querySelector('img')
+        lbImg.src = img.src
+        lbImg.alt = img.alt
+        lightbox.classList.add('open')
+      })
+    })
+
+    lbClose.addEventListener('click', () => lightbox.classList.remove('open'))
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) lightbox.classList.remove('open')
+    })
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') lightbox.classList.remove('open')
+    })
+
+    /* ── Particles ── */
+    const pCanvas = document.getElementById('particles')
+    const pCtx = pCanvas.getContext('2d')
+    let particles = []
+    let pW = 0, pH = 0
+
+    function resizeParticles() {
+      pW = window.innerWidth
+      pH = window.innerHeight
+      pCanvas.width = pW
+      pCanvas.height = pH
+    }
+    resizeParticles()
+    window.addEventListener('resize', resizeParticles)
+
+    function initParticles() {
+      particles = []
+      const count = Math.min(80, Math.floor(pW * pH / 15000))
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * pW,
+          y: Math.random() * pH,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3 - 0.1,
+          r: Math.random() * 1.5 + 0.5,
+          o: Math.random() * 0.3 + 0.05
+        })
+      }
+    }
+    initParticles()
+
+    function drawParticles() {
+      pCtx.clearRect(0, 0, pW, pH)
+      for (const p of particles) {
+        p.x += p.vx
+        p.y += p.vy
+        if (p.x < 0) p.x = pW
+        if (p.x > pW) p.x = 0
+        if (p.y < 0) p.y = pH
+        if (p.y > pH) p.y = 0
+        pCtx.beginPath()
+        pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+        pCtx.fillStyle = `rgba(255,255,255,${p.o})`
+        pCtx.fill()
+      }
+      requestAnimationFrame(drawParticles)
+    }
+    drawParticles()
+
+    /* ── Keyboard shortcuts ── */
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+      if (e.code === 'Space') {
+        e.preventDefault()
+        npPlayBtn.click()
+      }
+    })
+
+    /* ── Init ── */
     loadMusic()
     animateSpectrum()
   </script>

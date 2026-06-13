@@ -3,35 +3,35 @@
     "file": "1.mp3",
     "name": "1",
     "ext": "mp3",
-    "size": 4331729,
+    "size": 3249782,
     "path": "tracks/1.mp3"
   },
   {
     "file": "2.mp3",
     "name": "2",
     "ext": "mp3",
-    "size": 4331729,
+    "size": 3249782,
     "path": "tracks/2.mp3"
   },
   {
     "file": "3.mp3",
     "name": "3",
     "ext": "mp3",
-    "size": 3137201,
+    "size": 2353886,
     "path": "tracks/3.mp3"
   },
   {
     "file": "4.mp3",
     "name": "4",
     "ext": "mp3",
-    "size": 8321149,
+    "size": 6241847,
     "path": "tracks/4.mp3"
   },
   {
     "file": "5.mp3",
     "name": "5",
     "ext": "mp3",
-    "size": 1076244,
+    "size": 808169,
     "path": "tracks/5.mp3"
   }
 ]

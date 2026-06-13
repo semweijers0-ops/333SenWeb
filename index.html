@@ -532,11 +532,11 @@
         ctx.shadowColor = `rgb(${r},${g},${b})`
         ctx.shadowBlur = 8
         ctx.globalAlpha = 1
-        ctx.fillRect(mirror ? w - x - barW : x, y, barW, barH)
+        ctx.fillRect(x, y, barW, barH)
         if (val > 180) {
           ctx.shadowBlur = 16
           ctx.globalAlpha = 0.5
-          ctx.fillRect(mirror ? w - x - barW : x, y, barW, Math.min(barH, h * 0.15))
+          ctx.fillRect(x, y, barW, Math.min(barH, h * 0.15))
         }
       }
       ctx.shadowBlur = 0

@@ -498,6 +498,8 @@
 
     function animateSpectrum() {
       drawWaveform()
+      // capture freq data once for both hero waves so they mirror perfectly
+      if (analyser && !audio.paused) analyser.getByteFrequencyData(hwFreq)
       drawHeroWave(hwLCtx, false)
       drawHeroWave(hwRCtx, true)
       animFrame = requestAnimationFrame(animateSpectrum)
